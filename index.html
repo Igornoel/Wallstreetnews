@@ -276,10 +276,7 @@
         </div>
     </div>
 
-    <script type="module">
-        // Import the API key from config.js
-        import config from './config.js';
-        
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
             // DOM Elements
             const articlesContainer = document.querySelector('.articles');
@@ -296,8 +293,8 @@
             const nextPageBtn = document.querySelector('.next-page');
             const currentPageSpan = document.querySelector('.current-page');
 
-            // API Key from config file
-            const apiKey = config.apiKey;
+            // API Key
+            const apiKey = '0d3dbdffe19e4fa5b6c489f7dd0b672c';
             
             // State variables
             let currentPage = 1;
