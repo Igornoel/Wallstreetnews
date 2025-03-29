@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WSJ News Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #1a1a1a;
+            color: white;
+            border-radius: 8px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .search-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .search-button, .clear-button {
+            padding: 10px 20px;
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .clear-button {
+            background-color: #666;
+        }
+
+        .search-button:hover {
+            background-color: #0052a3;
+        }
+
+        .clear-button:hover {
+            background-color: #555;
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        select, input[type="date"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .articles {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .article {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .article:hover {
+            transform: translateY(-5px);
+        }
+
+        .article-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .article-content {
+            padding: 20px;
+        }
+
+        .article-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #0066cc;
+        }
+
+        .article-source {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .article-date {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 15px;
+        }
+
+        .article-description {
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+
+        .read-more {
+            display: inline-block;
+            padding: 8px 15px;
+            background-color: #0066cc;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+
+        .read-more:hover {
+            background-color: #0052a3;
+        }
+
+        .loading, .error, .no-results {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .loading {
+            display: none;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 10px;
+        }
+
+        .pagination button {
+            padding: 8px 15px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .pagination button:hover:not([disabled]) {
+            background-color: #e0e0e0;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .articles {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-container {
+                flex-direction: column;
+            }
+            
+            .filters {
+                flex-direction: column;
+            }
+        }
+
+        .placeholder-image {
+            background-color: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>WSJ News Viewer</h1>
+            <p>Browse the latest articles from The Wall Street Journal</p>
+        </header>
+
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="Search for articles...">
+            <button class="search-button">Search</button>
+            <button class="clear-button">Clear</button>
+        </div>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label for="sort-by">Sort By:</label>
+                <select id="sort-by">
+                    <option value="publishedAt">Newest First</option>
+                    <option value="relevancy">Relevance</option>
+                    <option value="popularity">Popularity</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="from-date">From:</label>
+                <input type="date" id="from-date">
+            </div>
+
+            <div class="filter-group">
+                <label for="to-date">To:</label>
+                <input type="date" id="to-date">
+            </div>
+        </div>
+
+        <div class="loading">Loading articles...</div>
+        <div class="error" style="display: none;"></div>
+        <div class="no-results" style="display: none;">No articles found. Try adjusting your search.</div>
+
+        <div class="articles"></div>
+
+        <div class="pagination">
+            <button class="prev-page" disabled>Previous</button>
+            <div class="page-info">Page <span class="current-page">1</span></div>
+            <button class="next-page">Next</button>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import the API key from config.js
+        import config from './config.js';
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const articlesContainer = document.querySelector('.articles');
+            const searchInput = document.querySelector('.search-input');
+            const searchButton = document.querySelector('.search-button');
+            const clearButton = document.querySelector('.clear-button');
+            const sortBySelect = document.getElementById('sort-by');
+            const fromDateInput = document.getElementById('from-date');
+            const toDateInput = document.getElementById('to-date');
+            const loadingElement = document.querySelector('.loading');
+            const errorElement = document.querySelector('.error');
+            const noResultsElement = document.querySelector('.no-results');
+            const prevPageBtn = document.querySelector('.prev-page');
+            const nextPageBtn = document.querySelector('.next-page');
+            const currentPageSpan = document.querySelector('.current-page');
+
+            // API Key from config file
+            const apiKey = config.apiKey;
+            
+            // State variables
+            let currentPage = 1;
+            let totalResults = 0;
+            const pageSize = 12;
+            
+            // Set default date values (last month to today)
+            const today = new Date();
+            const lastMonth = new Date();
+            lastMonth.setMonth(today.getMonth() - 1);
+            
+            fromDateInput.valueAsDate = lastMonth;
+            toDateInput.valueAsDate = today;
+
+            // Function to format date as YYYY-MM-DD for API
+            function formatDate(date) {
+                const d = new Date(date);
+                let month = '' + (d.getMonth() + 1);
+                let day = '' + d.getDate();
+                const year = d.getFullYear();
+
+                if (month.length < 2) month = '0' + month;
+                if (day.length < 2) day = '0' + day;
+
+                return [year, month, day].join('-');
+            }
+
+            // Function to format date for display
+            function formatDisplayDate(dateString) {
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                return new Date(dateString).toLocaleDateString(undefined, options);
+            }
+
+            // Function to fetch articles
+            async function fetchArticles() {
+                // Show loading state
+                loadingElement.style.display = 'block';
+                errorElement.style.display = 'none';
+                noResultsElement.style.display = 'none';
+                articlesContainer.innerHTML = '';
+
+                // Build query parameters
+                const query = searchInput.value.trim();
+                const sortBy = sortBySelect.value;
+                const fromDate = fromDateInput.value;
+                const toDate = toDateInput.value;
+
+                // Construct URL
+                let url = `https://newsapi.org/v2/everything?domains=wsj.com&apiKey=${apiKey}`;
+
+                if (query) {
+                    url += `&q=${encodeURIComponent(query)}`;
+                }
+
+                url += `&sortBy=${sortBy}`;
+                
+                if (fromDate) {
+                    url += `&from=${fromDate}`;
+                }
+                
+                if (toDate) {
+                    url += `&to=${toDate}`;
+                }
+                
+                url += `&page=${currentPage}&pageSize=${pageSize}`;
+
+                try {
+                    const response = await fetch(url);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    if (data.status === 'error') {
+                        throw new Error(data.message || 'Unknown API error');
+                    }
+                    
+                    totalResults = data.totalResults;
+                    
+                    // Update pagination controls
+                    updatePagination();
+                    
+                    // Display articles
+                    if (data.articles && data.articles.length > 0) {
+                        displayArticles(data.articles);
+                    } else {
+                        noResultsElement.style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error('Error fetching articles:', error);
+                    errorElement.textContent = `Error: ${error.message}`;
+                    errorElement.style.display = 'block';
+                } finally {
+                    loadingElement.style.display = 'none';
+                }
+            }
+
+            // Function to display articles
+            function displayArticles(articles) {
+                articlesContainer.innerHTML = '';
+                
+                articles.forEach(article => {
+                    const articleElement = document.createElement('div');
+                    articleElement.className = 'article';
+                    
+                    // Create image element or placeholder
+                    let imageHtml;
+                    if (article.urlToImage) {
+                        imageHtml = `<img src="${article.urlToImage}" alt="${article.title}" class="article-image">`;
+                    } else {
+                        imageHtml = `<div class="placeholder-image">No Image Available</div>`;
+                    }
+                    
+                    // Format the publication date
+                    const publishedDate = formatDisplayDate(article.publishedAt);
+                    
+                    // Create article HTML
+                    articleElement.innerHTML = `
+                        ${imageHtml}
+                        <div class="article-content">
+                            <h2 class="article-title">${article.title}</h2>
+                            <div class="article-source">
+                                ${article.author ? `By ${article.author}` : 'Wall Street Journal'}
+                            </div>
+                            <div class="article-date">${publishedDate}</div>
+                            <p class="article-description">${article.description || article.content || 'No description available'}</p>
+                            <a href="${article.url}" target="_blank" class="read-more">Read More</a>
+                        </div>
+                    `;
+                    
+                    articlesContainer.appendChild(articleElement);
+                });
+            }
+
+            // Function to update pagination controls
+            function updatePagination() {
+                const totalPages = Math.ceil(totalResults / pageSize);
+                currentPageSpan.textContent = currentPage;
+                
+                // Enable/disable previous button
+                prevPageBtn.disabled = currentPage <= 1;
+                
+                // Enable/disable next button
+                nextPageBtn.disabled = currentPage >= totalPages || totalResults <= pageSize;
+            }
+
+            // Event listeners
+            searchButton.addEventListener('click', () => {
+                currentPage = 1;
+                fetchArticles();
+            });
+            
+            clearButton.addEventListener('click', () => {
+                searchInput.value = '';
+                currentPage = 1;
+                fetchArticles();
+            });
+            
+            sortBySelect.addEventListener('change', () => {
+                currentPage = 1;
+                fetchArticles();
+            });
+            
+            fromDateInput.addEventListener('change', () => {
+                currentPage = 1;
+                fetchArticles();
+            });
+            
+            toDateInput.addEventListener('change', () => {
+                currentPage = 1;
+                fetchArticles();
+            });
+            
+            prevPageBtn.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    fetchArticles();
+                }
+            });
+            
+            nextPageBtn.addEventListener('click', () => {
+                currentPage++;
+                fetchArticles();
+            });
+            
+            // Allow search by pressing Enter key
+            searchInput.addEventListener('keyup', (event) => {
+                if (event.key === 'Enter') {
+                    currentPage = 1;
+                    fetchArticles();
+                }
+            });
+
+            // Initial fetch on page load
+            fetchArticles();
+        });
+    </script>
+</body>
+</html>
