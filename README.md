@@ -1,77 +1,109 @@
-# Wall Street News Website
-A comprehensive financial news platform that aggregates and displays the latest market updates and financial analysis using the NewsAPI. This project was developed as part of the "News API Integration" assignment.
+# Currency Converter
 
-## Table of Contents
-- [Overview](#overview)
-- [Features](#features)
-- [Technologies Used](#technologies-used)
-- [API Integration](#api-integration)
-- [Deployment](#deployment)
-- [Challenges and Solutions](#challenges-and-solutions)
-- [Demo](#demo)
-- [Credits](#credits)
+A simple, user-friendly web application that allows users to convert between different currencies using real-time exchange rates.
 
-## Overview
-This application serves as a one-stop destination for financial news, providing users with the latest Wall Street updates, market news, and financial insights. The platform aggregates news from various trusted financial sources through NewsAPI, creating a centralized hub for anyone interested in staying updated with financial developments.
 
 ## Features
-- **Financial News Feed**: Displays the latest market news from trusted financial sources
-- **Category Filtering**: Filter news by categories (stocks, markets, economy, cryptocurrencies)
-- **Source Selection**: Choose specific news sources to customize your feed
-- **Article Search**: Search for specific financial topics or companies
-- **Saved Articles**: Bookmark important news for later reading
-- **Responsive Design**: Works seamlessly across desktop and mobile devices
-- **Dark Mode**: Provides an alternative viewing experience for extended reading sessions
-- **Social Sharing**: Easily share financial news via social media platforms
-- **Error Handling**: Provides helpful feedback when API errors occur or internet connection is lost
+
+- Convert between multiple currencies with up-to-date exchange rates
+- Clean, responsive user interface
+- Swap currencies with a single click
+- Displays current exchange rate information
+- Real-time validation and error handling
 
 ## Technologies Used
+
 - HTML5
 - CSS3
 - JavaScript (ES6+)
-- Fetch API for asynchronous requests
-- LocalStorage for saving user preferences and bookmarked articles
-- NewsAPI for all financial news content
-
-## API Integration
-This project exclusively utilizes the [NewsAPI](https://newsapi.org/), a comprehensive news data service that provides:
-- Breaking news headlines from trusted sources
-- Full-text search with keyword filtering
-- Date range filtering
-- Source filtering
-- Category-based news aggregation
-
-The application makes multiple endpoint calls to gather financial news, filter by relevance, and present the most important stories to users. The API responses are processed and displayed in a user-friendly format with proper attribution to original sources.
-
-## Deployment
-The application has been deployed to two web servers (Web01 and Web02) with a load balancer (Lb01) distributing traffic between them, similar to the Weather App deployment architecture.
-
-## Challenges and Solutions
-### Challenge 1: API Rate Limiting
-**Solution:** Implemented client-side caching to store news data temporarily, reducing the number of API calls for frequently viewed categories.
-
-### Challenge 2: News Content Relevance
-**Solution:** Created a custom relevance algorithm that prioritizes financial news based on keywords, publication time, and source reliability.
-
-### Challenge 3: Secure API Key Management
-**Solution:** Implemented environment variables on the server side to securely store the NewsAPI key, preventing exposure in client-side code.
+- [ExchangeRate-API](https://www.exchangerate-api.com/) for currency conversion data
 
 ## Demo
-A short demonstration video showing the application's functionality and deployment can be found here: [Demo Video Link]()
 
-The video covers:
-- How to browse and filter financial news
-- Searching for specific companies or financial topics
-- Saving articles for later reading
-- Sharing content to social media
-- Accessing the application through the load balancer
-- Verification of load balancing functionality
+[View the live demo](#) ([The link to demo video](https://www.loom.com/share/7d912cbad83b45d6a63fc85d5a6b3b9c?sid=7dc79b97-2794-4b05-9d07-6ffc60de70a7))
 
-## Credits
-- News content provided by [NewsAPI](https://newsapi.org/)
-- Original article content from various financial news sources
-- HTML/CSS/JavaScript implementation by Igornoel
-- A help of AI to formalize code and optimize API requests
+## Getting Started
 
----
-*This project was created as an assignment for News API Integration. For questions or feedback, please contact n.ishimwe4@alustudent.com.*
+### Prerequisites
+
+- A modern web browser
+- Internet connection (for API access)
+- ExchangeRate-API key (free tier available)
+
+### Installation
+
+1. Clone the repository:
+   ```
+   git clone https://github.com/yourusername/currency-converter.git
+   ```
+
+2. Navigate to the project directory:
+   ```
+   cd currency-converter
+   ```
+
+3. Open `index.html` in your favorite code editor.
+
+4. Replace the API key with your own:
+   ```javascript
+   const API_KEY = 'YOUR_API_KEY_HERE';
+   ```
+   
+   Get your free API key by signing up at [ExchangeRate-API](https://www.exchangerate-api.com/).
+
+5. Open `index.html` in your web browser to use the application locally.
+
+## Usage
+
+1. Enter the amount you want to convert in the "Amount" field.
+2. Select the currency you're converting from in the "From" dropdown.
+3. Select the currency you're converting to in the "To" dropdown.
+4. Click the "Convert" button to see the result.
+5. Use the swap button (⇄) to quickly switch between the selected currencies.
+
+## API Usage
+
+This project uses the ExchangeRate-API v6. The free plan includes:
+- 1,500 API requests per month
+- 32 supported currency pairs
+- Updates every 24 hours
+
+## Customization
+
+### Colors
+
+You can customize the appearance by modifying the CSS variables in the `style` section of the HTML:
+
+```css
+button {
+    background-color: #3498db; /* Primary button color */
+}
+
+button:hover {
+    background-color: #2980b9; /* Button hover color */
+}
+```
+
+### Adding More Features
+
+Some ideas for extending the project:
+- Add currency flags next to currency codes
+- Implement a dark/light theme toggle
+- Add historical conversion rates
+- Create a conversion history feature
+
+## Browser Support
+
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+
+## License
+
+This project is licensed under Igornoel
+
+## Acknowledgments
+
+- [ExchangeRate-API](https://www.exchangerate-api.com/) for providing the exchange rate data
+- Icons and design inspiration from various open-source projects
